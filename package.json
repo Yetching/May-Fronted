@@ -1,0 +1,16 @@
+{
+  "name": "May-Fronted",
+  "version": "1.0.0",
+  "description": "yetching study for fronted on May",
+  "main": "index.js",
+  "repository": "git@github.com:Yetching/May-Fronted.git",
+  "author": "Yetching <51228182+Yetching@users.noreply.github.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/preset-env": "^7.14.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.13.16",
+    "@babel/core": "^7.14.0"
+  }
+}
