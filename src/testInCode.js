@@ -11,6 +11,11 @@ const sourceCode = `
     console.error(2)
     console.debug('after')
   }
+  const a = {
+    name: 'li',
+    age: 20
+  }
+  console.log(a?.name)
   log()
   class Foo {
     bar(): void {
@@ -42,6 +47,8 @@ const { code, map } = generator(ast, {
   sourceMaps: true,
   sourceFileName,
 });
+
+console.log(ast);
 
 console.log(code);
 
