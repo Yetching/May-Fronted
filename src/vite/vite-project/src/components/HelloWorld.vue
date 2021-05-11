@@ -27,6 +27,7 @@
 <script setup>
 import { defineProps, onMounted, reactive } from "vue";
 import { h, init } from "snabbdom";
+import { elementVNode, fragmentVNode, portalVNode } from "../Vnode/Vnode";
 
 defineProps({
   msg: String,
@@ -42,7 +43,11 @@ const Mycomponent = (props) => {
 
 const comp = Mycomponent({ title: "My Component" });
 
-console.log(comp);
+console.log(elementVNode);
+
+console.log(fragmentVNode);
+
+console.log(portalVNode);
 
 const changeNode = () => {
   const nextVnode = Mycomponent({ title: "New Component" });

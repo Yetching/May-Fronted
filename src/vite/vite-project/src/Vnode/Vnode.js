@@ -1,5 +1,7 @@
 //Vnode描述真实dom
 
+import { VNodeFlags } from './VNodeFlags';
+
 const elVnode = {
   tag: 'div',
   data: {
@@ -49,7 +51,7 @@ const elVnode1 = {
 //  把所有td都作为fragmentVnode的子节点，根元素并不是一个真实dom
 //  当渲染器遇到Fragment时将直接只渲染所有子节点至页面
 
-const Fragment = Symbol();
+// const Fragment = Symbol();
 
 const fragmentVnode = {
   tag: Fragment,
@@ -78,7 +80,7 @@ const jsx = `
   </template>
   `;
 
-const Portal = Symbol();
+// const Portal = Symbol();
 
 const portalVnode = {
   tag: Portal,
@@ -170,3 +172,23 @@ Object.keys(params).forEach((key) => {
 });
 
 console.log(params);
+
+export class VNode {
+  _isVNode = true;
+  el = Element | null;
+  flags = VNodeFlags;
+}
+
+import { Fragment, Portal, hV2 } from './h';
+
+export const elementVNode = hV2('div', null, '我是纯文本');
+
+export const fragmentVNode = hV2(Fragment, null, [hV2('td'), hV2('td')]);
+
+export const portalVNode = hV2(
+  Portal,
+  {
+    target: '#app',
+  },
+  hV2('h1')
+);
