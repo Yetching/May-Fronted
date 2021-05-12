@@ -17,6 +17,7 @@ export function hV1() {
   };
 }
 
+//为children添加一个key
 function normalizeVNodes(children) {
   const newChildren = [];
 
@@ -28,6 +29,27 @@ function normalizeVNodes(children) {
     newChildren.push(child);
   }
   return newChildren;
+}
+
+//序列化class，处理多种形式如字符串，对象，数组；应用层面上的优化设计
+//设计返回字符串，因为render只处理字符串
+
+function normalizeClass(classValue) {
+  let res = '';
+  if (typeof classValue === 'string') {
+    res = classValue;
+  } else if (Array.isArray(classValue)) {
+    classValue.forEach((item) => {
+      res += normalizeClass(item) + ' ';
+    });
+  } else if (typeof classValue === 'object') {
+    for (const name in classValue) {
+      if (classValue[name]) {
+        res += name + ' ';
+      }
+    }
+  }
+  return res.trim();
 }
 
 //文本节点
@@ -49,6 +71,9 @@ export function hV2(tag, data = null, children = null) {
   let flags = null;
   if (typeof tag === 'string') {
     flags = tag === 'svg' ? VNodeFlags.ELEMENT_SVG : VNodeFlags.ELEMENT_HTML;
+    if (data) {
+      data.class = normalizeClass(data.class);
+    }
   } else if (tag === Fragment) {
     flags = VNodeFlags.FRAGMENT;
   } else if (tag === Portal) {

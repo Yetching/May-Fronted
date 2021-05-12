@@ -11,3 +11,6 @@ export const ChildrenFlags = {
   // children 是多个没有 key 的 VNode
   NONE_KEYED_VNODES: 1 << 3,
 };
+
+ChildrenFlags.MULTIPLE_VNODES =
+  ChildrenFlags.KEYED_VNODES | ChildrenFlags.NONE_KEYED_VNODES;

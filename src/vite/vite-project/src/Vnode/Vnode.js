@@ -181,7 +181,46 @@ export class VNode {
 
 import { Fragment, Portal, hV2 } from './h';
 
-export const elementVNode = hV2('div', null, '我是纯文本');
+// import { Component } from 'vue';
+
+function handler() {
+  alert('click me');
+}
+
+export const elementVNode = hV2(
+  'div',
+  {
+    style: {
+      height: '100px',
+      width: '100px',
+      background: 'green',
+    },
+    class: [
+      'app-ele',
+      {
+        'app-ele': true,
+        'ele-color': true,
+        'color-test': true,
+      },
+    ],
+  },
+  [
+    hV2('input', {
+      class: 'cls-a',
+      type: 'checkbox',
+      checked: true,
+      custom: 'custom',
+    }),
+    hV2('div', {
+      style: {
+        height: '50px',
+        width: '50px',
+        background: '#8cc',
+      },
+      onclick: handler,
+    }),
+  ]
+);
 
 export const fragmentVNode = hV2(Fragment, null, [hV2('td'), hV2('td')]);
 
@@ -192,3 +231,23 @@ export const portalVNode = hV2(
   },
   hV2('h1')
 );
+
+//函数式组件
+
+function MyFunctionalComponent() {}
+
+export const functionalVNode = hV2(MyFunctionalComponent, null, hV2('div'));
+
+//有状态的组件
+//我们在编写有状态组件时通常会继承一个设计好的基础组件;
+class Component {
+  render() {
+    throw '组件缺少render函数';
+  }
+}
+
+//如果组件没有render函数也就没有意义，打印错误信息
+
+class MyStatefulComponent extends Component {}
+
+export const statefulVNode = hV2(MyStatefulComponent, null, hV2('div'));
