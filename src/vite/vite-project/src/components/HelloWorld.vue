@@ -21,11 +21,14 @@
     <code>components/HelloWorld.vue</code> to test hot module replacement.
   </p>
   <div id="comp"></div>
+
+  <button @click="changeNode">生成新Vnode</button>
   <div
     id="ele"
     class="ele"
   ></div>
-  <button @click="changeNode">生成新Vnode</button>
+  <button @click="patchNode">patch操作</button>
+  <button @click="patchNodeV2">第二次patch操作</button>
 </template>
 
 <script setup>
@@ -38,6 +41,17 @@ import {
   functionalVNode,
   statefulVNode,
 } from "../Vnode/Vnode";
+
+import {
+  prevMulEleVNode,
+  prevSingleEleVNode,
+  prevNoEleVNode,
+  nextMulEleVNode,
+  nextSingleEleVNode,
+  nextNoEleVNode,
+  prevTextVNode,
+  nextTextVNode,
+} from "../Vnode/testVNode";
 
 import { VNodeFlags } from "../Vnode/VNodeFlags";
 
@@ -71,21 +85,29 @@ console.log(VNodeFlags);
 
 onMounted(() => {
   console.log(document.getElementsByClassName("app-ele")[0]);
-  render(elementVNode, document.getElementById("ele"));
+  render(prevTextVNode, document.getElementById("ele"));
   //此时在该组件的css对render生成的DOM不生效
   //解决: 因为组件是vue自己的，在编译的时候会将scoped作为特殊ID添加至每一个
   //html元素的属性上，所以实际的样式选择变为了
   // .app-ele[data-v-xxxx]
   //我们自己render生成的dom暂时没有data-v-xxx字段
   console.log(document.getElementsByClassName("app-ele")[0]);
+  patch(document.getElementById("comp"), comp);
 });
 const changeNode = () => {
   const nextVnode = Mycomponent({ title: "New Component" });
   patch(comp, nextVnode);
 };
 
+const patchNode = () => {
+  render(nextTextVNode, document.getElementById("ele"));
+};
+
+const patchNodeV2 = () => {
+  render(statefulVNode, document.getElementById("ele"));
+};
+
 // onMounted(() => {
-//   patch(document.getElementById("comp"), comp);
 // });
 </script>
 

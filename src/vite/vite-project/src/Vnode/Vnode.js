@@ -187,12 +187,45 @@ function handler() {
   alert('click me');
 }
 
+class statefulComponent {
+  render() {
+    return hV2(
+      'div',
+      {
+        style: {
+          background: '#c8c8',
+        },
+      },
+      [
+        hV2('h3', null, '我是statefulComponent的标题1'),
+        hV2('h3', null, '我是statefulComponent的标题2'),
+        hV2('h3', null, '我是statefulComponent的标题3'),
+      ]
+    );
+  }
+}
+
+function functionalComponent() {
+  return hV2(
+    'div',
+    {
+      style: {
+        background: '#00c8c8',
+      },
+    },
+    [
+      hV2('h3', null, '我是函数式组件的标题1'),
+      hV2('h3', null, '我是函数式组件的标题2'),
+      hV2('h3', null, '我是函数式组件的标题3'),
+    ]
+  );
+}
+
 export const elementVNode = hV2(
   'div',
   {
     style: {
-      height: '100px',
-      width: '100px',
+      width: '300px',
       background: 'green',
     },
     class: [
@@ -219,6 +252,48 @@ export const elementVNode = hV2(
       },
       onclick: handler,
     }),
+    hV2(
+      'div',
+      {
+        style: {
+          color: '#fff',
+        },
+      },
+      '我是纯文本'
+    ),
+    hV2(
+      Fragment,
+      {
+        style: {
+          color: '#fff', //不生效的color，因为fragment实际不存在dom
+        },
+        class: 'fragment',
+      },
+      [
+        hV2('h3', null, '我是fragment的子元素1'),
+        hV2('h3', null, '我是fragment的子元素2'),
+        hV2('h3', null, '我是fragment的子元素3'),
+      ]
+    ),
+    hV2(
+      Portal,
+      {
+        target: '#app',
+      },
+      hV2(
+        'div',
+        {
+          style: {
+            width: '100%',
+            height: '100%',
+            background: '#eee',
+          },
+        },
+        '我是挂载到根节点的div'
+      )
+    ),
+    hV2(statefulComponent),
+    hV2(functionalComponent),
   ]
 );
 
@@ -248,6 +323,32 @@ class Component {
 
 //如果组件没有render函数也就没有意义，打印错误信息
 
-class MyStatefulComponent extends Component {}
+class MyStatefulComponent extends Component {
+  render() {
+    return hV2(
+      'div',
+      {
+        style: {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '300px',
+          height: '300px',
+          borderRadius: '50%',
+          background: '#00c8c8',
+        },
+      },
+      hV2(
+        'h3',
+        {
+          style: {
+            color: '#fff',
+          },
+        },
+        'patch形成statefulComponent'
+      )
+    );
+  }
+}
 
-export const statefulVNode = hV2(MyStatefulComponent, null, hV2('div'));
+export const statefulVNode = hV2(MyStatefulComponent, null);
