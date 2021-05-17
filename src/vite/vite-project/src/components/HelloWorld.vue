@@ -51,11 +51,19 @@ import {
   nextNoEleVNode,
   prevTextVNode,
   nextTextVNode,
+  prevFragVNode,
+  nextFragVNode,
+  prevPorVNode,
+  nextPorVNode,
+  MyComponent,
+  ParentComponent,
+  ChildComponent,
 } from "../Vnode/testVNode";
 
 import { VNodeFlags } from "../Vnode/VNodeFlags";
 
 import { render } from "../Vnode/render";
+import { hV2 } from "../Vnode/h";
 
 defineProps({
   msg: String,
@@ -71,6 +79,8 @@ const Mycomponent = (props) => {
 
 const comp = Mycomponent({ title: "My Component" });
 
+const statefulComp = hV2(ParentComponent);
+
 console.log(elementVNode);
 
 console.log(fragmentVNode);
@@ -85,14 +95,15 @@ console.log(VNodeFlags);
 
 onMounted(() => {
   console.log(document.getElementsByClassName("app-ele")[0]);
-  render(prevTextVNode, document.getElementById("ele"));
+  // render(prevPorVNode, document.getElementById("ele"));
+  render(statefulComp, document.getElementById("ele"));
+
   //此时在该组件的css对render生成的DOM不生效
   //解决: 因为组件是vue自己的，在编译的时候会将scoped作为特殊ID添加至每一个
   //html元素的属性上，所以实际的样式选择变为了
   // .app-ele[data-v-xxxx]
   //我们自己render生成的dom暂时没有data-v-xxx字段
   console.log(document.getElementsByClassName("app-ele")[0]);
-  patch(document.getElementById("comp"), comp);
 });
 const changeNode = () => {
   const nextVnode = Mycomponent({ title: "New Component" });
@@ -100,7 +111,7 @@ const changeNode = () => {
 };
 
 const patchNode = () => {
-  render(nextTextVNode, document.getElementById("ele"));
+  render(nextPorVNode, document.getElementById("ele"));
 };
 
 const patchNodeV2 = () => {

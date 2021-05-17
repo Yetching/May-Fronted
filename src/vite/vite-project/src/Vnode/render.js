@@ -38,19 +38,19 @@ function mountFragment(vnode, container) {
   switch (childFlags) {
     case ChildrenFlags.SINGLE_VNODE:
       mount(children, container);
-      vnode.el = children.el;
+      vnode.el = children.el; //可以不需要指向
       break;
     case ChildrenFlags.NO_CHILDREN:
       //没有子节点，等价于挂载空片段，创建一个空的文本节点占位
       const placeholder = createTextNode('');
       mountText(placeholder, container);
-      vnode.el = placeholder.el;
+      vnode.el = placeholder.el; //可以不需要指向
       break;
     default:
       children.forEach((child) => {
         mount(child, container);
       });
-      // vnode.el = children[0].el; //这个地方会涉及之后patch的一些处理，暂时设计取第一个
+    // vnode.el = children[0].el; //这个地方会涉及之后patch的一些处理，暂时设计取第一个
   }
 }
 
@@ -77,19 +77,76 @@ function mountPortal(vnode, container) {
 
 //有状态的组件的挂载原理，data、props、ref等基于组件实例的设计，暂不考虑
 
-function mountStatefulComponent(vnode, container) {
+function mountStatefulComponentv1(vnode, container) {
   const instance = new vnode.tag();
   instance.$vnode = instance.render();
   mount(instance.$vnode, container);
   instance.$el = vnode.el = instance.$vnode.el;
 }
 
+//进阶
+
+function mountStatefulComponent(vnode, container) {
+  //创建实例
+  //将实例存储在children属性中便于后续的获取
+  //存储子节点对于组件类型的VNode，我们应该放在slots中
+  const instance = (vnode.children = new vnode.tag());
+  //初始化props，暂时最简单全部复制
+  instance.$props = vnode.data;
+  //实例的渲染更新
+  instance._update = function () {
+    if (instance._mounted) {
+      console.log('component update');
+      //1.拿到旧的vnode
+      const prevVNode = instance.$vnode;
+      //2.重新渲染新的vnode
+      const nextVNode = (instance.$vnode = instance.render());
+      //3.patch更新
+      console.log(prevVNode.el.parentNode);
+      patch(prevVNode, nextVNode, prevVNode.el.parentNode);
+      //4.更新vnode.el和$el
+      instance.$el = vnode.el = instance.$vnode.el;
+    } else {
+      //1.渲染vnode
+      instance.$vnode = instance.render();
+      //2.挂载
+      mount(instance.$vnode, container);
+      //3.组件已挂载标识
+      instance._mounted = true;
+      //4.DOM引用绑定
+      instance.$el = vnode.el = instance.$vnode.el;
+      //5.调用mounted钩子
+      instance.mounted && instance.mounted();
+    }
+  };
+
+  instance._update();
+}
+
 //函数式组件的挂载原理
 
 function mountFunctionalComponent(vnode, container) {
-  const $vnode = vnode.tag();
-  mount($vnode, container);
-  vnode.el = $vnode.el;
+  vnode.handle = {
+    prev: null,
+    next: vnode,
+    container,
+    update: () => {
+      if (vnode.handle.prev) {
+        const prevVNode = vnode.handle.prev;
+        const nextVNode = vnode.handle.next;
+        const prevTree = prevVNode.children;
+        const props = nextVNode.data;
+        const nextTree = (nextVNode.children = nextVNode.tag(props));
+        patch(prevTree, nextTree, vnode.handle.container);
+      } else {
+        const props = vnode.data;
+        const $vnode = (vnode.children = vnode.tag(props));
+        mount($vnode, container);
+        vnode.el = $vnode.el;
+      }
+    },
+  };
+  vnode.handle.update();
 }
 
 //挂载组件

@@ -12,7 +12,8 @@ export function patch(prevVNode, nextVNode, container) {
   } else if (nextFlags & VNodeFlags.ELEMENT) {
     patchElement(prevVNode, nextVNode, container);
   } else if (nextFlags & VNodeFlags.COMPONENT) {
-    pacthComponent(prevVNode, nextVNode, container);
+    console.log('component patch');
+    patchComponent(prevVNode, nextVNode, container);
   } else if (nextFlags & VNodeFlags.TEXT) {
     patchText(prevVNode, nextVNode);
   } else if (nextFlags & VNodeFlags.FRAGMENT) {
@@ -26,6 +27,12 @@ export function patch(prevVNode, nextVNode, container) {
 
 function replaceVNode(prevVNode, nextVNode, container) {
   container.removeChild(prevVNode.el);
+  //改进,调用unmounted钩子函数
+  if (prevVNode.flags & VNodeFlags.COMPONENT_STATEFUL_NORMAL) {
+    const instance = prevVNode.children;
+    instance.unmounted && instance.unmounted();
+  }
+
   mount(nextVNode, container);
 }
 
@@ -46,6 +53,7 @@ function patchText(prevVNode, nextVNode) {
 //跟更新Element相似，差别在于只需要直接处理children就好了
 
 function patchFragment(prevVNode, nextVNode, container) {
+  console.log(prevVNode);
   patchChildren(
     prevVNode.childFlags,
     nextVNode.childFlags,
@@ -59,11 +67,69 @@ function patchFragment(prevVNode, nextVNode, container) {
       nextVNode.el = nextVNode.children.el;
       break;
     case ChildrenFlags.NO_CHILDREN:
+      console.log(prevVNode);
       nextVNode.el = prevVNode.el;
       break;
     default:
-      nextVNode.el = nextVNode.children[0].el
+      nextVNode.el = nextVNode.children[0].el;
       break;
+  }
+  console.log(nextVNode);
+}
+
+//更新Portal
+
+function patchPortal(prevVNode, nextVNode) {
+  //patchChildren函数处理之后，新的子节点已存在于旧的容器里了
+  //appendChild方法会将页面已存在的元素节点移动到新的目标容器
+  patchChildren(
+    prevVNode.childFlags,
+    nextVNode.childFlags,
+    prevVNode.children,
+    nextVNode.children,
+    prevVNode.tag
+  );
+
+  nextVNode.el = prevVNode.el;
+
+  if (prevVNode.tag !== nextVNode.tag) {
+    const container =
+      typeof nextVNode.tag === 'string'
+        ? document.querySelector(nextVNode.tag)
+        : nextVNode.tag;
+
+    switch (nextVNode.childFlags) {
+      case ChildrenFlags.SINGLE_VNODE:
+        container.appendChild(nextVNode.children.el);
+        break;
+      case ChildrenFlags.NO_CHILDREN:
+        break;
+      default:
+        nextVNode.children.forEach((nextChild) => {
+          container.appendChild(nextChild.el);
+        });
+        break;
+    }
+  }
+}
+
+//更新component
+
+function patchComponent(prevVNode, nextVNode, container) {
+  //前后更新的组件不一致时，直接替换，因为我们改进一下replaceVNode
+  if (nextVNode.tag !== prevVNode.tag) {
+    replaceVNode(prevVNode, nextVNode, container);
+  } else if (nextVNode.flags & VNodeFlags.COMPONENT_STATEFUL_NORMAL) {
+    const instance = (nextVNode.children = prevVNode.children);
+    instance.$props = nextVNode.data;
+    instance._update();
+  } else {
+    const handle = (nextVNode.handle = prevVNode.handle);
+    handle.prev = prevVNode;
+    handle.next = nextVNode;
+    handle.container = container;
+
+    handle.update();
   }
 }
 
