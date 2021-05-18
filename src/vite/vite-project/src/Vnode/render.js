@@ -2,10 +2,10 @@ import { ChildrenFlags } from './ChildrenFlags';
 import { VNodeFlags } from './VNodeFlags';
 import { patch } from './patch';
 
-export function mount(vnode, container) {
+export function mount(vnode, container, refNode) {
   const { flags } = vnode;
   if (flags & VNodeFlags.ELEMENT) {
-    mountElement(vnode, container);
+    mountElement(vnode, container, refNode);
   } else if (flags & VNodeFlags.COMPONENT) {
     mountComponent(vnode, container);
   } else if (flags & VNodeFlags.TEXT) {
@@ -163,7 +163,7 @@ function mountComponent(vnode, container) {
 
 import { patchData } from './patchData';
 
-function mountElement(vnode, container) {
+function mountElement(vnode, container, refNode) {
   const isSVG = vnode.flags & VNodeFlags.ELEMENT_SVG;
   const el = isSVG
     ? document.createElementNS('http://www.w3.org/2000/svg', vnode.tag)
@@ -217,7 +217,7 @@ function mountElement(vnode, container) {
   //     mountElement(vnode.children[i], el);
   //   }
   // }
-  container.appendChild(el);
+  refNode ? container.insertBefore(el, refNode) : container.appendChild(el);
 }
 
 export function render(vnode, container) {

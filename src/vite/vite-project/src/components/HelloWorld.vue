@@ -27,6 +27,7 @@
     id="ele"
     class="ele"
   ></div>
+  <div id="diff"></div>
   <button @click="patchNode">patch操作</button>
   <button @click="patchNodeV2">第二次patch操作</button>
 </template>
@@ -58,6 +59,8 @@ import {
   MyComponent,
   ParentComponent,
   ChildComponent,
+  prevDiffVNode,
+  nextDiffVNode,
 } from "../Vnode/testVNode";
 
 import { VNodeFlags } from "../Vnode/VNodeFlags";
@@ -98,6 +101,8 @@ onMounted(() => {
   // render(prevPorVNode, document.getElementById("ele"));
   render(statefulComp, document.getElementById("ele"));
 
+  render(prevDiffVNode, document.getElementById("diff"));
+
   //此时在该组件的css对render生成的DOM不生效
   //解决: 因为组件是vue自己的，在编译的时候会将scoped作为特殊ID添加至每一个
   //html元素的属性上，所以实际的样式选择变为了
@@ -111,7 +116,8 @@ const changeNode = () => {
 };
 
 const patchNode = () => {
-  render(nextPorVNode, document.getElementById("ele"));
+  console.log(111);
+  render(nextDiffVNode, document.getElementById("diff"));
 };
 
 const patchNodeV2 = () => {

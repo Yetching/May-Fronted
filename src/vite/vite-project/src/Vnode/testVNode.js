@@ -1,5 +1,21 @@
 import { Fragment, hV2, Portal } from './h';
 
+export const prevDiffVNode = hV2('div', null, [
+  hV2('h3', { key: 'a' }, '节点1'),
+  hV2('h3', { key: 'b' }, '节点2'),
+  hV2('h3', { key: 'c' }, '节点3'),
+  hV2('h3', { key: 'd' }, '节点4'),
+  hV2('h3', { key: 'e' }, '节点5'),
+]);
+
+export const nextDiffVNode = hV2('div', null, [
+  hV2('h3', { key: 'a' }, '新节点1'),
+  hV2('h1', { key: 'f' }, '新节点6'),
+  hV2('h3', { key: 'e' }, '新节点5'),
+  hV2('h3', { key: 'b' }, '新节点2'),
+  hV2('h3', { key: 'c' }, '新节点3'),
+]);
+
 export class MyComponent {
   localState = 1;
 
