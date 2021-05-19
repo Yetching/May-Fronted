@@ -6,6 +6,8 @@ export const prevDiffVNode = hV2('div', null, [
   hV2('h3', { key: 'c' }, '节点3'),
   hV2('h3', { key: 'd' }, '节点4'),
   hV2('h3', { key: 'e' }, '节点5'),
+  hV2('h3', { key: 'g' }, '节点7'),
+  hV2('h3', { key: 'h' }, '节点8'),
 ]);
 
 export const nextDiffVNode = hV2('div', null, [
