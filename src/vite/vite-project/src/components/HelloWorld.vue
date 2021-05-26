@@ -30,6 +30,7 @@
   <div id="diff"></div>
   <button @click="patchNode">patch操作</button>
   <button @click="patchNodeV2">第二次patch操作</button>
+  <button @click="down">下载</button>
 </template>
 
 <script setup>
@@ -67,6 +68,8 @@ import { VNodeFlags } from "../Vnode/VNodeFlags";
 
 import { render } from "../Vnode/render";
 import { hV2 } from "../Vnode/h";
+
+import { downLoad } from "../utils/downLoad";
 
 defineProps({
   msg: String,
@@ -122,6 +125,14 @@ const patchNode = () => {
 
 const patchNodeV2 = () => {
   render(statefulVNode, document.getElementById("ele"));
+};
+
+const down = () => {
+  console.log(111111);
+  downLoad(
+    "http://5.5.3.231/structure/2021_04_26_09/C5AC1F47-A182-58A7-B453-776403000000.jpg",
+    "图片test"
+  );
 };
 
 // onMounted(() => {
